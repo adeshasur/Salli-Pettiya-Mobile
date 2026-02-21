@@ -37,8 +37,8 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
+                  children: [
+                    const Text(
                       'DAWASAKATA DANNA ONA:',
                       style: TextStyle(
                         color: Colors.black,
@@ -46,8 +46,8 @@ class DashboardScreen extends StatelessWidget {
                         fontSize: 12,
                       ),
                     ),
-                    SizedBox(height: 10),
-                    Text(
+                    const SizedBox(height: 10),
+                    const Text(
                       'Rs. 1,000',
                       style: TextStyle(
                         color: Colors.black,
@@ -55,11 +55,50 @@ class DashboardScreen extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
+                    const SizedBox(height: 24),
+
+                    // Stats Row
+                    Row(
+                      children: [
+                        _buildStatCard('TOTAL SAVED', 'Rs. 0', AppColors.neonGreen),
+                        const SizedBox(width: 16),
+                        _buildStatCard('DAYS LEFT', '10 Days', Colors.white),
+                      ],
+                    ),
                   ],
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // Move this method outside of build() but inside the class
+  Widget _buildStatCard(String title, String value, Color valueColor) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.darkCard,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(color: Colors.grey, fontSize: 10)),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: TextStyle(
+                color: valueColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
