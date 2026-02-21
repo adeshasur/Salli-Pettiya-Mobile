@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
+import 'package:salli_pettiya_mobile/theme/app_colors.dart';
+import 'calendar_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -96,7 +97,12 @@ class DashboardScreen extends StatelessWidget {
                 // --- Generate Plan Button ---
                 ElevatedButton(
                   onPressed: () {
-                    // මෙතනට පස්සේ අපි logic එක දාමු
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CalendarScreen(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.neonGreen,
