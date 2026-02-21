@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:salli_pettiya_mobile/theme/app_colors.dart';
-import 'package:salli_pettiya_mobile/screens/dashboard_screen.dart';
+import 'theme/app_colors.dart';
+import 'screens/dashboard_screen.dart';
 
 void main() {
   runApp(const SalliPettiyaApp());
@@ -15,13 +15,10 @@ class SalliPettiyaApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Salli Pettiya',
       theme: ThemeData(
-        // Dark theme
         brightness: Brightness.dark,
         scaffoldBackgroundColor: AppColors.pureBlack,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-
-      //Main Loading Screen
       home: const DashboardScreen(),
     );
   }
