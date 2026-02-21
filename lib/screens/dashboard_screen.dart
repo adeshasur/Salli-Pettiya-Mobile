@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/app_colors.dart';
 import '../services/storage_service.dart';
 import 'calendar_screen.dart';
+import 'settings_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -13,6 +15,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int totalSaved = 0;
   int daysLeft = 10;
+  int dailyTarget = 1000;
 
   @override
   void initState() {
@@ -21,9 +24,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _loadStats() async {
+    final prefs = await SharedPreferences.getInstance();
     final savedDates = await StorageService.getSavedDates();
     setState(() {
-      totalSaved = savedDates.length * 1000;
+      dailyTarget = prefs.getInt('daily_target') ?? 1000;
+      totalSaved = savedDates.length * dailyTarget;
     });
   }
 
@@ -41,16 +46,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 const SizedBox(height: 40),
 
-                // --- Title ---
-                const Text(
-                  'SALLI-PETTIYA',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: AppColors.neonGreen,
-                    fontSize: 42,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -2.0,
-                  ),
+                // --- Title Row with Settings Icon ---
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(width: 48),
+                    const Text(
+                      'SALLI-PETTIYA',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.neonGreen,
+                        fontSize: 42,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -2.0,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.settings, color: Colors.grey),
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsScreen(),
+                          ),
+                        );
+                        _loadStats();
+                      },
+                    ),
+                  ],
                 ),
                 const Text(
                   'SMART SAVINGS PLANNER',
@@ -89,7 +112,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         builder: (context) => const CalendarScreen(),
                       ),
                     );
-                    _loadStats(); // Calendar එකෙන් ආපහු ආවාම refresh
+                    _loadStats();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.neonGreen,
@@ -134,8 +157,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text(
+        children: [
+          const Text(
             'DAWASAKATA DANNA ONA:',
             style: TextStyle(
               color: Colors.black,
@@ -144,10 +167,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               letterSpacing: 1.0,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
-            'Rs. 1,000',
-            style: TextStyle(
+            'Rs. $dailyTarget', // Dynamic!
+            style: const TextStyle(
               color: Colors.black,
               fontSize: 50,
               fontWeight: FontWeight.w900,
