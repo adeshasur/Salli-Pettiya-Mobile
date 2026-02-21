@@ -1,9 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:salli_pettiya_mobile/theme/app_colors.dart';
+import '../theme/app_colors.dart';
+import '../services/storage_service.dart';
 import 'calendar_screen.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  int totalSaved = 0;
+  int daysLeft = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStats();
+  }
+
+  Future<void> _loadStats() async {
+    final savedDates = await StorageService.getSavedDates();
+    setState(() {
+      totalSaved = savedDates.length * 1000;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +41,7 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 const SizedBox(height: 40),
 
-                // --- ඇප් එකේ නම (Title) ---
+                // --- Title ---
                 const Text(
                   'SALLI-PETTIYA',
                   textAlign: TextAlign.center,
@@ -42,67 +64,32 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                // --- ප්‍රධාන ඉලක්කය පෙන්වන කාඩ් එක (Main Green Card) ---
-                Container(
-                  padding: const EdgeInsets.all(32),
-                  decoration: BoxDecoration(
-                    color: AppColors.spotifyGreen,
-                    borderRadius: BorderRadius.circular(40),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.neonGreen.withOpacity(0.2),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'DAWASAKATA DANNA ONA:',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                      Text(
-                        'Rs. 1,000',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 50,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // --- Main Target Card ---
+                _buildTargetCard(),
 
                 const SizedBox(height: 24),
 
-                // --- විස්තර පෙන්වන කාඩ් දෙක (Stats Grid) ---
+                // --- Stats Grid ---
                 Row(
                   children: [
-                    _buildStatCard('TOTAL SAVED', 'Rs. 0', AppColors.neonGreen),
+                    _buildStatCard('TOTAL SAVED', 'Rs. $totalSaved', AppColors.neonGreen),
                     const SizedBox(width: 16),
-                    _buildStatCard('DAYS LEFT', '10 Days', Colors.white),
+                    _buildStatCard('DAYS LEFT', '$daysLeft Days', Colors.white),
                   ],
                 ),
 
                 const SizedBox(height: 32),
 
-                // --- Generate Plan Button ---
+                // --- Open Calendar Button ---
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const CalendarScreen(),
                       ),
                     );
+                    _loadStats(); // Calendar එකෙන් ආපහු ආවාම refresh
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.neonGreen,
@@ -114,7 +101,7 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'GENERATE PLAN',
+                    'OPEN CALENDAR',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 18,
@@ -131,7 +118,46 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  // පොඩි කාඩ් එක හදන Helper Method එක (Class එක ඇතුළේ තියෙන්න ඕනේ)
+  Widget _buildTargetCard() {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: AppColors.spotifyGreen,
+        borderRadius: BorderRadius.circular(40),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.neonGreen.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text(
+            'DAWASAKATA DANNA ONA:',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              letterSpacing: 1.0,
+            ),
+          ),
+          SizedBox(height: 12),
+          Text(
+            'Rs. 1,000',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 50,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildStatCard(String title, String value, Color valueColor) {
     return Expanded(
       child: Container(
